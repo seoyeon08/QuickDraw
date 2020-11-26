@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pickle
 
-files = os.listdir("./data") 
+files = os.listdir("./data")    # path 수정이 이루어짐
 x = []
 x_load = []
 y = []
@@ -12,7 +12,7 @@ y_load = []
 def load_data():
     count = 0
     for file in files:
-        file = "./data/" + file
+        file = "./data/" + file     # path 수정이 이루어짐
         x = np.load(file)
         x = x.astype('float32') / 255.
         x = x[0:10000, :]
