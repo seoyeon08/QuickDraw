@@ -3,6 +3,7 @@ from keras.models import load_model
 import numpy as np
 from collections import deque
 import os
+from PIL import ImageFont, ImageDraw, Image
 
 model = load_model('QuickDrawNew.h5')
 
@@ -10,10 +11,12 @@ model = load_model('QuickDrawNew.h5')
 def main():
     emojis = get_QD_emojis()
     cap = cv2.VideoCapture(0)
+
     pts = deque(maxlen=512)
     blackboard = np.zeros((480, 640, 3), dtype=np.uint8)
     digit = np.zeros((200, 200, 3), dtype=np.uint8)
     pred_class = 0
+
 
     while (cap.isOpened()):
 
@@ -47,7 +50,7 @@ def main():
         img = cv2.flip(img, 1)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         kernel = np.ones((5, 5), np.uint8)
-        mask = cv2.inRange(hsv, Lower_green, Upper_green)
+        mask = cv2.inRange(hsv, Lower_color, Upper_color)
         mask = cv2.erode(mask, kernel, iterations=2)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
         # mask=cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel)
@@ -83,7 +86,7 @@ def main():
                 blur1 = cv2.medianBlur(blackboard_gray, 15)
                 blur1 = cv2.GaussianBlur(blur1, (5, 5), 0)
                 thresh1 = cv2.threshold(blur1, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-                blackboard_cnts = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[1]
+                blackboard_cnts = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[0]
                 if len(blackboard_cnts) >= 1:
                     cnt = max(blackboard_cnts, key=cv2.contourArea)
                     print(cv2.contourArea(cnt))
